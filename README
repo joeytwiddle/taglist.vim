@@ -1,9 +1,17 @@
-
 Joey's mushed up version of the taglist plugin
 
 Adds a couple of modes with a tree-like layout, which is based rather naively
 on the indentation of each tag's definition line in the file.  Works better in
 some languages than others.
+
+You are welcome to grab my tags for haskell, coffeescript, vimhelp, markdown:
+
+  http://hwi.ath.cx/cgi-bin/cvsweb/home/.ctags
+
+Note that you will also need the relevant tlist_*_settings settings from:
+
+  http://hwi.ath.cx/cgi-bin/cvsweb/home/.vimrc
+
 
 
 --------------------------------------

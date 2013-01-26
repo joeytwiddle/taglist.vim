@@ -1,22 +1,9 @@
-"" Joey's:
-"" Switch to taglist, move to next/previous line, and select tag there.
-"" Here we are basically implementing Tlist_Jump_To_NextTag/PrevTag.
-"nmap <silent> [[ :TlistOpen<Enter><Up><Enter>
-"nmap <silent> ]] :TlistOpen<Enter><Down><Enter>
-"" Search for next/previous tag line (by indent):
-" nmap <silent> [[ :TlistOpen<Enter>0:call search("^    ","b")<Enter>W<Enter>
-" nmap <silent> ]] :TlistOpen<Enter>0:call search("^    ","")<Enter>W<Enter>
-"" Better to stay in 1st column, so taglist doesn't scroll horizontally.
-" nmap <silent> [[ :TlistOpen<Enter>0:call search("^    ","b")<Enter><Enter>
-" nmap <silent> ]] :TlistOpen<Enter>0:call search("^    ","")<Enter><Enter>
-"" It is faster to call directly.
-nnoremap <silent> [[ :TlistOpen<Enter>0:call search("^    ","b")<Enter>:call <SID>Tlist_Window_Jump_To_Tag('useopen')<CR>
-nnoremap <silent> ]] :TlistOpen<Enter>0:call search("^    ","")<Enter>:call <SID>Tlist_Window_Jump_To_Tag('useopen')<CR>
-"" BUG: Why are these sometimes not going to the right place?!  It's working
-"" in Java and asm, but not on .vim files, where it jumps straight to the first function.
-
-":so ~/.vim/plugin/taglist.vim.4.5
-":finish
+" Joey's changes:
+"
+" pre-2012  Lots of stuff I don't remember
+"
+" 20121031  Added third sort-mode "tree" which shows tags in file-order but
+"           with indent derived from file.  Works but not always neatly.
 
 "" TODO: I think I may have made TL update rather to keenly, it destroys any
 "" folds I folded in the taglist when it refreshes, even if nothing has
@@ -35,6 +22,31 @@ nnoremap <silent> ]] :TlistOpen<Enter>0:call search("^    ","")<Enter>:call <SID
 " crazy fountain on WinEnter events.
 " DONE: Instead we should wait on CursorHold, and then check if our buffer or
 " window has changed, before deciding whether to update.
+
+"" To test against the original:
+":so ~/.vim/plugin/taglist.vim.4.5
+":finish
+
+"" Joey's next/previous tag (in taglist order) keybind:
+"" Switch to taglist, move to next/previous line, and select tag there.
+"" Here we are basically implementing Tlist_Jump_To_NextTag/PrevTag.
+"nmap <silent> [[ :TlistOpen<Enter><Up><Enter>
+"nmap <silent> ]] :TlistOpen<Enter><Down><Enter>
+"" Search for next/previous tag line (by indent):
+" nmap <silent> [[ :TlistOpen<Enter>0:call search("^    ","b")<Enter>W<Enter>
+" nmap <silent> ]] :TlistOpen<Enter>0:call search("^    ","")<Enter>W<Enter>
+"" Better to stay in 1st column, so taglist doesn't scroll horizontally.
+" nmap <silent> [[ :TlistOpen<Enter>0:call search("^    ","b")<Enter><Enter>
+" nmap <silent> ]] :TlistOpen<Enter>0:call search("^    ","")<Enter><Enter>
+"" It is faster to call directly.
+" nnoremap <silent> [[ :TlistOpen<Enter>0:call search("^    ","b")<Enter>:call <SID>Tlist_Window_Jump_To_Tag('useopen')<CR>
+" nnoremap <silent> ]] :TlistOpen<Enter>0:call search("^    ","")<Enter>:call <SID>Tlist_Window_Jump_To_Tag('useopen')<CR>
+"" Switched to 1 or more spaces, to handle my new tree mode
+nnoremap <silent> [[ :TlistOpen<Enter>0:call search("^ ","b")<Enter>:call <SID>Tlist_Window_Jump_To_Tag('useopen')<CR>
+nnoremap <silent> ]] :TlistOpen<Enter>0:call search("^ ","")<Enter>:call <SID>Tlist_Window_Jump_To_Tag('useopen')<CR>
+"" BUG: Why are these sometimes not going to the right place?!  It's working
+"" in Java and asm, but not on .vim files, where it jumps straight to the first function.
+"" BUG TODO: When sort_type == "tree" we want a search only "^  "
 
 " File: taglist.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
@@ -162,9 +174,9 @@ if !exists('loaded_taglist')
         let Tlist_Show_Menu = 0
     endif
 
-    " Tag listing sort type - 'name' or 'order'
+    " Tag listing sort type - 'name' or 'order' or 'tree'
     if !exists('Tlist_Sort_Type')
-        let Tlist_Sort_Type = 'order'
+        let Tlist_Sort_Type = 'tree'
     endif
 
     " Joey's:
@@ -529,6 +541,9 @@ let s:tlist_def_verilog_settings = 'verilog;m:module;c:constant;P:parameter;' .
 " vim language
 let s:tlist_def_vim_settings = 'vim;a:autocmds;v:variable;f:function;c:command'
 
+" vim helpfiles
+let s:tlist_def_help_settings = 'help;1:section;2:heading;3:marker'
+
 " yacc language
 let s:tlist_def_yacc_settings = 'yacc;l:label'
 
@@ -562,7 +577,7 @@ let s:tlist_menu_empty = 1
 " and cleared appropriately.
 let s:Tlist_Skip_Refresh = 0
 
-let s:list_of_sort_types = [ "tree", "name", "order" ]
+let s:list_of_sort_types = [ "name", "order", "tree" ]
 
 " Tlist_Window_Display_Help()
 function! s:Tlist_Window_Display_Help()
@@ -2086,16 +2101,17 @@ function! s:Tlist_Window_Refresh_File(filename, ftype)
             let dummy = s:Tlist_Get_Tag_Prototype(fidx,i)
             let tindent_var = 's:tlist_' . fidx . '_' . i . '_tag_proto_indent'
             let indent = {tindent_var}
-            let txt = '  ' . repeat('  ',indent)
+            let indent = min([indent,8])
+            let txt = repeat(' ',1+indent)
             let ttype_var = 's:tlist_' . fidx . '_' . i . '_tag_type'
             if exists(ttype_var)
-                let txt .= {ttype_var} . ': '
+                " let txt .= {ttype_var} . ': '
                 " let txt .= '[' . {ttype_var} . '] '
             endif
             let txt .= {fidx_i}_tag_name
-            " if exists(ttype_var)
-                " let txt .= ' (' . {ttype_var} . ')'
-            " endif
+            if exists(ttype_var)
+                let txt .= ' (' . {ttype_var} . ')'
+            endif
             "let proto = s:Tlist_Get_Tag_Linenum(fidx,i)
             " let tproto_var = 's:tlist_' . fidx . '_' . i . '_tag_proto'
             " if exists(tproto_var)
@@ -2981,8 +2997,9 @@ function! s:Tlist_Refresh()
         return
     endif
 
-    " Skip buffers with 'buftype' set to nofile, nowrite, quickfix or help
-    if &buftype != ''
+    " Skip buffers with 'buftype' set to nofile, nowrite or quickfix
+    " Joey enabled it for help
+    if &buftype != '' && &buftype != "help"
         return
     endif
 
@@ -3549,6 +3566,7 @@ function! s:EchoShort(msgin)
     " Arguments are read-only
     let l:msg = a:msgin
     " Vim 7.2 requires "- 12", although 0 should work really!  :P
+    " Occasionally that's still not enough; we still get the flipping message.
     if len(l:msg) > &columns - 12
         let l:msg = strpart(l:msg,0,&columns - 12)
     endif

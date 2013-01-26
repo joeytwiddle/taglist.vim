@@ -2079,14 +2079,23 @@ function! s:Tlist_Window_Refresh_File(filename, ftype)
                 " let txt = ' ' . {tname_var}
                 " let txt = ' ' . s:tlist_{fidx}_{i}_tag_name
                 let fidx_i = 's:tlist_' . fidx . '_' . i
-                let txt = '    ' . {fidx_i}_tag_name
+                "" This next call ensures the tproto_var has been parsed
+                let dummy = s:Tlist_Get_Tag_Prototype(fidx,i)
+                let tindent_var = 's:tlist_' . fidx . '_' . i . '_tag_proto_indent'
+                let indent = {tindent_var}
+                let txt = '    ' . repeat(' ',indent) . {fidx_i}_tag_name
                 let ttype_var = 's:tlist_' . fidx . '_' . i . '_tag_type'
                 if exists(ttype_var)
                     let txt .= ' (' . {ttype_var} . ')'
                 endif
-                "let proto = s:Tlist_Get_Tag_Prototype(fidx,i)
-                let proto = s:Tlist_Get_Tag_Linenum(fidx,i)
-                let txt .= ' : ' . proto
+                "let proto = s:Tlist_Get_Tag_Linenum(fidx,i)
+                " let tproto_var = 's:tlist_' . fidx . '_' . i . '_tag_proto'
+                " if exists(tproto_var)
+                    " let proto = ">" . {tproto_var} . "<"
+                " else
+                    " let proto = "?"
+                " endif
+                " let txt .= ' : ' . proto
                 "" let ttype = {fidx_i}_tag_type
                 "let ttype = s:tlist_{fidx}_{i}_tag_type
                 "let txt = ' bananas'
@@ -2231,6 +2240,9 @@ function! s:Tlist_Get_Tag_Prototype(fidx, tidx)
     endif
     let tag_proto = strpart(tag_line, start, end - start)
     let {tproto_var} = substitute(tag_proto, '\s*', '', '')
+    " echo "tag_proto=".tag_proto
+    let {tproto_var}_indent = len(substitute(tag_proto, '[^ \t].*', '', ''))
+    " echo "indent = ".{tproto_var}_indent
 
     return {tproto_var}
 endfunction
@@ -3775,6 +3787,11 @@ function! s:Tlist_Window_Highlight_Tag(filename, cur_lnum, cntx, center)
     " Start of file + Start of tag type + offset
     let lnum = s:tlist_{fidx}_start + s:tlist_{fidx}_{ttype}_offset +
                 \ s:tlist_{fidx}_{tidx}_ttype_idx
+
+    if g:TagList_GroupByTagType == 0
+        let file_start_lnum = s:tlist_{fidx}_start
+        let lnum = file_start_lnum + tidx
+    endif
 
     " Goto the line containing the tag
     exe lnum

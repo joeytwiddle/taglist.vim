@@ -2084,6 +2084,9 @@ function! s:Tlist_Window_Refresh_File(filename, ftype)
                 if exists(ttype_var)
                     let txt .= ' (' . {ttype_var} . ')'
                 endif
+                "let proto = s:Tlist_Get_Tag_Prototype(fidx,i)
+                let proto = s:Tlist_Get_Tag_Linenum(fidx,i)
+                let txt .= ' : ' . proto
                 "" let ttype = {fidx_i}_tag_type
                 "let ttype = s:tlist_{fidx}_{i}_tag_type
                 "let txt = ' bananas'
@@ -3227,6 +3230,16 @@ endfunction
 " Tlist_Window_Get_Tag_Index()
 " Return the tag index for the specified line in the taglist window
 function! s:Tlist_Window_Get_Tag_Index(fidx, lnum)
+    " Joey DONE: This information does not exist if g:TagList_GroupByTagType==0
+    "            We will have to create our own data structure, and poll that? :f
+
+    if g:TagList_GroupByTagType == 0
+        let file_start_lnum = s:tlist_{a:fidx}_start
+        let tagnum = a:lnum - file_start_lnum             " assuming Tlist_Compact_Format
+        " This will break if we space out any of the tags :S
+        return tagnum
+    endif
+
     let ttype = s:Tlist_Window_Get_Tag_Type_By_Linenum(a:fidx, a:lnum)
 
     " Current line doesn't belong to any of the displayed tag types

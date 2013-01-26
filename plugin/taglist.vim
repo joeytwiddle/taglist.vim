@@ -194,7 +194,7 @@ if !exists('loaded_taglist')
     " Automatically close the folds for the non-active files in the taglist
     " window
     if !exists('Tlist_File_Fold_Auto_Close')
-        let Tlist_File_Fold_Auto_Close = 0
+        let Tlist_File_Fold_Auto_Close = 1
     endif
 
     " Close the taglist window when a tag is selected
@@ -225,7 +225,7 @@ if !exists('loaded_taglist')
 
     " Display the tags for only one file in the taglist window
     if !exists('Tlist_Show_One_File')
-        let Tlist_Show_One_File = 0
+        let Tlist_Show_One_File = 1
     endif
 
     if !exists('Tlist_Max_Submenu_Items')

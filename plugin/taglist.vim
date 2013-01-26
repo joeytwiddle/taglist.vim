@@ -45,6 +45,7 @@
 "" Here we are basically implementing Tlist_Jump_To_NextTag/PrevTag.
 ""
 "" But wait - we have some enemies!
+"" For example, this gets set every time we read a .vim file:
 ""   n  ]]          *@m':call search('^\s*fu\%[nction]\>', "W")<CR>
 ""           Last set from /usr/share/vim/vim72/ftplugin/vim.vim
 "" Let's make sure we unmap them first!
@@ -73,13 +74,11 @@ nnoremap <silent> ]] :TlistOpen<Enter>0:call search("^ ","")<Enter>:call <SID>Tl
 "" in Java and asm, but not on .vim files, where it jumps straight to the first function.
 "" BUG TODO: When sort_type == "tree" we want a search only "^  "
 
-"" Joey's peek at prototype easy but not always:
-" These are not what I want.  They show info about the tag we are
-" inside/below, not the tag under the cursor.
+"" Joey's peek at prototype (easily invoked with <Space>, not on CursorHold until it's finished):
+"" These are not what I want.  They show info about the tag we are inside/below, not the tag under the cursor.
 "nnoremap <Space> <Space>:TlistShowPrototype<Enter>
 "nnoremap <Space> <Space>:call <SID>Tlist_Window_Show_Info()<CR>
-" This is more what I was after but sucky:
-"nnoremap <Space> <Space>:tselect <cword><Enter>
+" This is more what I was after but too verbose:
 "nnoremap <Space> <Space>:exec "tselect ".expand("<cword>")<Enter>
 
 

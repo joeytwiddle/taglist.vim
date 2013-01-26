@@ -1,4 +1,13 @@
-This is a mirror of http://www.vim.org/scripts/script.php?script_id=273
+
+Joey's mushed up version of the taglist plugin
+
+Adds a couple of modes with a tree-like layout, which is based rather naively
+on the indentation of each tag's definition line in the file.  Works better in
+some languages than others.
+
+
+--------------------------------------
+
 
 The "Tag List" plugin is a source code browser plugin for Vim and
 provides an overview of the structure of source code files and allows

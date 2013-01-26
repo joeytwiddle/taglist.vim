@@ -182,7 +182,7 @@ if !exists('loaded_taglist')
     " not.  Also, controls whether empty lines are used to separate the tag
     " tree.
     if !exists('Tlist_Compact_Format')
-        let Tlist_Compact_Format = 1
+        let Tlist_Compact_Format = 0
     endif
 
     " Exit Vim if only the taglist window is currently open. By default, this is
@@ -194,7 +194,7 @@ if !exists('loaded_taglist')
     " Automatically close the folds for the non-active files in the taglist
     " window
     if !exists('Tlist_File_Fold_Auto_Close')
-        let Tlist_File_Fold_Auto_Close = 1
+        let Tlist_File_Fold_Auto_Close = 0
     endif
 
     " Close the taglist window when a tag is selected
@@ -653,6 +653,7 @@ function! s:Tlist_Debug_Show()
     silent! put =s:tlist_msg
     " Move the cursor to the first line
     normal! gg
+    setlocal nomodified
 endfunction
 
 " Tlist_Log_Msg
@@ -1308,10 +1309,12 @@ function! s:Tlist_Window_Create()
 
         if g:Tlist_Use_Right_Window
             " Open the window at the rightmost place
-            let win_dir = 'botright vertical'
+            " let win_dir = 'botright vertical'
+            let win_dir = 'rightbelow vertical'
         else
             " Open the window at the leftmost place
-            let win_dir = 'topleft vertical'
+            " let win_dir = 'topleft vertical'
+            let win_dir = 'leftabove vertical'
         endif
         let win_size = g:Tlist_WinWidth
     endif
@@ -1936,7 +1939,7 @@ function! s:Tlist_Window_Refresh_File(filename, ftype)
         let fidx_ttype = 's:tlist_' . fidx . '_' . ttype
         let ttype_txt = {fidx_ttype}
         if ttype_txt != ''
-            let txt = '  ' . s:tlist_{a:ftype}_{i}_fullname
+            let txt = ' ' . s:tlist_{a:ftype}_{i}_fullname
             if g:Tlist_Compact_Format == 0
                 let ttype_start_lnum = line('.') + 1
                 silent! put =txt
@@ -2615,12 +2618,16 @@ function! s:Tlist_Window_Toggle()
         return
     endif
 
+    let startWin = winnr()
+
     call s:Tlist_Window_Open()
 
     " Go back to the original window, if Tlist_GainFocus_On_ToggleOpen is not
     " set
     if !g:Tlist_GainFocus_On_ToggleOpen
-        call s:Tlist_Exe_Cmd_No_Acmds('wincmd p')
+        " This was failing, probably due to MBE
+        " call s:Tlist_Exe_Cmd_No_Acmds('wincmd p')
+        call s:Tlist_Exe_Cmd_No_Acmds(startWin.'wincmd w')
     endif
 
     " Update the taglist menu
@@ -4097,6 +4104,10 @@ endfunction
 " window. Used after entering a tab. If this is not done, then the folds
 " are not properly created for taglist windows displayed in multiple tabs.
 function! s:Tlist_Refresh_Folds()
+
+  " This function used to throw errors when it refreshes after :tabclose
+  try
+
     let winnum = bufwinnr(g:TagList_title)
     if winnum == -1
         return
@@ -4132,6 +4143,9 @@ function! s:Tlist_Refresh_Folds()
     endwhile
 
     exe save_wnum . 'wincmd w'
+
+  endtry
+
 endfunction
 
 function! s:Tlist_Menu_Add_Base_Menu()

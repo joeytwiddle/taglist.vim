@@ -4,6 +4,10 @@ Adds a couple of modes with a tree-like layout, which is based rather naively
 on the indentation of each tag's definition line in the file.  Works better in
 some languages than others.
 
+
+
+--- And some additional ctags rules ---
+
 You are welcome to grab my tags for haskell, coffeescript, vimhelp, markdown:
 
   http://hwi.ath.cx/cgi-bin/cvsweb/home/.ctags

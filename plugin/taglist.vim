@@ -220,7 +220,7 @@ if !exists('loaded_taglist')
 
     " Enable fold column to display the folding for the tag tree
     if !exists('Tlist_Enable_Fold_Column')
-        let Tlist_Enable_Fold_Column = 0
+        let Tlist_Enable_Fold_Column = 1
     endif
 
     " Display the tags for only one file in the taglist window
@@ -653,7 +653,6 @@ function! s:Tlist_Debug_Show()
     silent! put =s:tlist_msg
     " Move the cursor to the first line
     normal! gg
-    setlocal nomodified
 endfunction
 
 " Tlist_Log_Msg
@@ -2618,16 +2617,12 @@ function! s:Tlist_Window_Toggle()
         return
     endif
 
-    let startWin = winnr()
-
     call s:Tlist_Window_Open()
 
     " Go back to the original window, if Tlist_GainFocus_On_ToggleOpen is not
     " set
     if !g:Tlist_GainFocus_On_ToggleOpen
-        " This was failing, probably due to MBE
-        " call s:Tlist_Exe_Cmd_No_Acmds('wincmd p')
-        call s:Tlist_Exe_Cmd_No_Acmds(startWin.'wincmd w')
+        call s:Tlist_Exe_Cmd_No_Acmds('wincmd p')
     endif
 
     " Update the taglist menu
@@ -4106,8 +4101,8 @@ endfunction
 function! s:Tlist_Refresh_Folds()
 
   " This function used to throw errors when it refreshes after :tabclose
-  try
-
+  try  
+  
     let winnum = bufwinnr(g:TagList_title)
     if winnum == -1
         return

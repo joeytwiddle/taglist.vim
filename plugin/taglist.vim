@@ -1,3 +1,18 @@
+nmap [[ :TlistOpen<Enter><Up><Enter>
+nmap ]] :TlistOpen<Enter><Down><Enter>
+
+" BUGS TODO:
+" My new wincmd p commands are firing off autocmds in various other plugins.
+" And also re-prising 0-line height windows.
+" SOLUTION:
+" Revert recent commits introducting wincmd p to store and restore previous
+" window.
+" Instead disable activation on WinEnter
+" e.g. 5<C-w><Up> should jump 5 windows up, but each one in turn fires off a
+" crazy fountain on WinEnter events.
+" Instead we should wait on CursorHold, and then check if our buffer or window
+" has changed, before deciding whether to update.
+
 " File: taglist.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Version: 4.5
@@ -194,7 +209,7 @@ if !exists('loaded_taglist')
     " Automatically close the folds for the non-active files in the taglist
     " window
     if !exists('Tlist_File_Fold_Auto_Close')
-        let Tlist_File_Fold_Auto_Close = 1
+        let Tlist_File_Fold_Auto_Close = 0
     endif
 
     " Close the taglist window when a tag is selected
@@ -640,6 +655,9 @@ endfunction
 " Tlist_Debug_Show
 " Display the taglist debug messages in a new window
 function! s:Tlist_Debug_Show()
+    echo s:tlist_msg
+    return
+
     if s:tlist_msg == ''
         call s:Tlist_Warning_Msg('Taglist: No debug messages')
         return
@@ -1147,6 +1165,7 @@ function! s:Tlist_Remove_File(file_idx, user_request)
                 \ s:tlist_{fidx}_filename . ', ' . a:user_request . ')')
 
     let save_winnr = winnr()
+    wincmd p
     let winnum = bufwinnr(g:TagList_title)
     if winnum != -1
         " Taglist window is open, remove the file from display
@@ -1400,6 +1419,7 @@ function! s:Tlist_Window_Check_Width()
         call s:Tlist_Log_Msg("Tlist_Window_Check_Width: Changing window " .
                     \ "width from " . width . " to " . g:Tlist_WinWidth)
         let save_winnr = winnr()
+        wincmd p
         if save_winnr != tlist_winnr
             call s:Tlist_Exe_Cmd_No_Acmds(tlist_winnr . 'wincmd w')
         endif
@@ -1678,7 +1698,8 @@ function! s:Tlist_Window_Init()
                     \ !g:Tlist_Process_File_Always &&
                     \ (!has('gui_running') || !g:Tlist_Show_Menu)
             " Auto refresh the taglist window
-            autocmd BufEnter * call s:Tlist_Refresh()
+            "autocmd BufEnter * call s:Tlist_Refresh()
+            autocmd CursorHold * call s:Tlist_Refresh()
         endif
 
         if !g:Tlist_Use_Horiz_Window
@@ -2477,6 +2498,7 @@ function! Tlist_Update_File(filename, ftype)
 
         " Save the current window number
         let save_winnr = winnr()
+        wincmd p
 
         " Goto the taglist window
         call s:Tlist_Window_Goto_Window()
@@ -2879,6 +2901,7 @@ function! s:Tlist_Refresh()
 
         " Save the current window number
         let save_winnr = winnr()
+        wincmd p
 
         " Goto the taglist window
         call s:Tlist_Window_Goto_Window()
@@ -3539,6 +3562,7 @@ function! s:Tlist_Window_Highlight_Tag(filename, cur_lnum, cntx, center)
 
     " Save the original window number
     let org_winnr = winnr()
+    wincmd p
 
     if org_winnr == winnum
         let in_taglist_window = 1
@@ -3893,6 +3917,7 @@ function! s:Tlist_Session_Load(...)
     let winnum = bufwinnr(g:TagList_title)
     if winnum != -1
         let save_winnr = winnr()
+        wincmd p
 
         " Goto the taglist window
         call s:Tlist_Window_Goto_Window()
@@ -4038,6 +4063,7 @@ function! s:Tlist_Window_Open_File_Fold(acmd_bufnr)
 
     " Save the original window number
     let org_winnr = winnr()
+    wincmd p
     if org_winnr == winnum
         let in_taglist_window = 1
     else
@@ -4113,7 +4139,8 @@ function! s:Tlist_Refresh_Folds()
         return
     endif
 
-    let save_wnum = winnr()
+    let save_winnr = winnr()
+    wincmd p
     exe winnum . 'wincmd w'
 
     " First remove all the existing folds
@@ -4142,7 +4169,7 @@ function! s:Tlist_Refresh_Folds()
         let fidx = fidx + 1
     endwhile
 
-    exe save_wnum . 'wincmd w'
+    exe save_winnr . 'wincmd w'
 
   endtry
 

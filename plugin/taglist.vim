@@ -182,7 +182,7 @@ if !exists('loaded_taglist')
     " not.  Also, controls whether empty lines are used to separate the tag
     " tree.
     if !exists('Tlist_Compact_Format')
-        let Tlist_Compact_Format = 0
+        let Tlist_Compact_Format = 1
     endif
 
     " Exit Vim if only the taglist window is currently open. By default, this is
@@ -220,7 +220,7 @@ if !exists('loaded_taglist')
 
     " Enable fold column to display the folding for the tag tree
     if !exists('Tlist_Enable_Fold_Column')
-        let Tlist_Enable_Fold_Column = 1
+        let Tlist_Enable_Fold_Column = 0
     endif
 
     " Display the tags for only one file in the taglist window

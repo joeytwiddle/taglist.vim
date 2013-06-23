@@ -79,7 +79,11 @@ nnoremap <silent> ]] :TlistOpen<Enter>0:call search("^ ","")<Enter>:call <SID>Tl
 "nnoremap <Space> <Space>:TlistShowPrototype<Enter>
 "nnoremap <Space> <Space>:call <SID>Tlist_Window_Show_Info()<CR>
 " This is more what I was after but too verbose:
+" And it's already bound to g] by default
 "nnoremap <Space> <Space>:exec "tselect ".expand("<cword>")<Enter>
+" This opens in the preview window; could be handy.
+"nnoremap <Space> <Space>:exec "ptjump! ".expand("<cword>")<Enter>
+" This feature has now moved to showtagdecl.vim
 
 
 " File: taglist.vim

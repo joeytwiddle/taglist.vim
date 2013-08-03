@@ -1,8 +1,16 @@
 Joey's mushed up version of the taglist plugin
 
-Adds a couple of modes with a tree-like layout, which is based rather naively
-on the indentation of each tag's definition line in the file.  Works better in
-some languages than others.
+Adds a couple of modes which display tags in file-order, rather than grouped by
+tag-type as in the original plugin.
+
+You can cycle through the new and original display modes with 's'.
+
+There are also new modes with a tree-like layout, which is based rather naively
+on the indentation of each tag's definition line in the file.  This works
+better in some languages than others.
+
+I also made a bunch of changes *before* adding the new modes, but I can't
+remember what they were!
 
 
 
@@ -10,11 +18,11 @@ some languages than others.
 
 You are welcome to grab my tags for haskell, coffeescript, vimhelp, markdown:
 
-  http://hwi.ath.cx/cgi-bin/cvsweb/home/.ctags
+  https://github.com/joeytwiddle/rc_files/raw/master/.ctags
 
-Note that you will also need the relevant tlist_*_settings settings from:
+Note that you will also need the relevant tlist_*_settings for each language which can be found in:
 
-  http://hwi.ath.cx/cgi-bin/cvsweb/home/.vimrc
+  https://github.com/joeytwiddle/rc_files/raw/master/.vimrc
 
 
 

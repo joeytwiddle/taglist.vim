@@ -3961,6 +3961,10 @@ function! s:Tlist_Window_Highlight_Tag(filename, cur_lnum, cntx, center)
 
         call winline()
 
+        if exists("*g:SexyScroller_ScrollToCursor")
+            call g:SexyScroller_ScrollToCursor()
+        endif
+
         if !in_taglist_window
             exe org_prev_winnr . 'wincmd w'
             exe org_winnr . 'wincmd w'
@@ -3987,6 +3991,8 @@ function! s:Tlist_Window_Highlight_Tag(filename, cur_lnum, cntx, center)
     " Goto the line containing the tag
     exe lnum
 
+    " WET - The rest of this function is reproduced above!
+
     " Open the fold
     if foldclosed('.') != -1
         .foldopen
@@ -4004,6 +4010,12 @@ function! s:Tlist_Window_Highlight_Tag(filename, cur_lnum, cntx, center)
 
     " Highlight the tag name
     call s:Tlist_Window_Highlight_Line()
+
+    " Our use of noautocmd above prevents SexyScroller from scrolling now, but it will scroll later when the user focuses the taglist window!  If it is present, force it to scroll now.
+    " If you would prefer SexyScroller did not perform a smooth scroll, pass 0 to the function.
+    if exists("*g:SexyScroller_ScrollToCursor")
+        call g:SexyScroller_ScrollToCursor()
+    endif
 
     " Go back to the original window
     if !in_taglist_window

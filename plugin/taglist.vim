@@ -2059,7 +2059,7 @@ function! s:Tlist_Window_Refresh_File(filename, ftype)
     endif
 
     let txt = fnamemodify(s:tlist_{fidx}_filename, ':t') . ' (' .
-                \ fnamemodify(s:tlist_{fidx}_filename, ':p:h') . ')'
+                \ fnamemodify(s:tlist_{fidx}_filename, ':~:.:h') . ')'
     if g:Tlist_Compact_Format == 0
         silent! put =txt
     else
